@@ -1,12 +1,4 @@
 <resources>
     <string name="app_name">3AstonViewHomework</string>
-    <string name="Italy">Italy</string>
-    <string name="Poland">Poland</string>
-    <string name="Thailand">Thailand</string>
-    <string name="Austria">Austria</string>
-    <string name="Madagascar">Madagascar</string>
-    <string name="Switzerland">Switzerland</string>
-    <string name="Colombia">Colombia</string>
-    <string name="Denmark">Denmark</string>
-
+    <string name="search_hint">https://picsum.photos/</string>
 </resources>
