@@ -1,5 +1,6 @@
 package ru.sumbul.a3aston;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,17 +36,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String question = String.valueOf(requestInput.getText());
-
-                Glide.with(imageView)
-                        .load(question)
-                        .placeholder(R.drawable.ic_baseline_rotate_right_24)
-                        .error(R.drawable.ic_baseline_error_24)
-                        .timeout(10_000)
-                        .into(imageView);
+                try {
+                    Glide.with(imageView)
+                            .load(question)
+                            .placeholder(R.drawable.ic_baseline_rotate_right_24)
+                            .error(R.drawable.ic_baseline_error_24)
+                            .timeout(10_000)
+                            .into(imageView);
+                } catch (IOException e) {
+                    display(e.getMessage());
+                }
                 return false;
             }
         });
     }
 
-
+    public void display(String msg) {
+        Context context = createContext();
+        Toast toast = Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+    }
 }
