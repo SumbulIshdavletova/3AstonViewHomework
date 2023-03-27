@@ -48,55 +48,38 @@ public class MainActivity extends AppCompatActivity {
         requestInput = findViewById(R.id.search);
 
 
-
         requestInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 
-                String question = String.valueOf(requestInput.getText());
 
-                new GetImageFromUrl(imageView).execute(question);
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
 
+                executor.execute(() -> {
+                    String question = String.valueOf(requestInput.getText());
+                    try {
+                        InputStream in = new URL(question).openStream();
+                        bitmap = BitmapFactory.decodeStream(in);
+
+                        handler.post(() -> {
+                            imageView.setImageBitmap(bitmap);
+                        });
+                    } catch (Exception e) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                imageView.setImageResource(R.drawable.ic_baseline_error_24);
+                                Toast.makeText(getApplicationContext(), "Picture load error!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    }
+                });
                 return false;
             }
         });
     }
-//    public void displayExceptionMessage(String msg)
-//    {
-//
-//    }
-
-    public class GetImageFromUrl extends AsyncTask<String, Void, Bitmap> {
-        ImageView imageView;
-
-
-
-        public GetImageFromUrl(ImageView img) {
-            this.imageView = img;
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... url) {
-            String stringUrl = url[0];
-            bitmap = null;
-            InputStream inputStream;
-            try {
-                inputStream = new java.net.URL(stringUrl).openStream();
-                bitmap = BitmapFactory.decodeStream(inputStream);
-            } catch (IOException e) {
-                Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-               // displayExceptionMessage(e.getMessage());
-            }
-            return bitmap;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-            imageView.setImageBitmap(bitmap);
-        }
-    }
 }
+
 
 
