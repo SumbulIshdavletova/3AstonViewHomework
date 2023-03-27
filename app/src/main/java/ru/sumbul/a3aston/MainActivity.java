@@ -3,6 +3,7 @@ package ru.sumbul.a3aston;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -10,9 +11,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.IOException;
@@ -22,7 +28,7 @@ import java.net.URL;
 public class MainActivity extends AppCompatActivity {
 
     TextInputEditText requestInput;
-    ImageView imageView;
+    ImageView imageView = null;
 
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,23 +42,28 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 String question = String.valueOf(requestInput.getText());
-                try {
-                    Glide.with(imageView)
-                            .load(question)
-                            .placeholder(R.drawable.ic_baseline_rotate_right_24)
-                            .error(R.drawable.ic_baseline_error_24)
-                            .timeout(10_000)
-                            .into(imageView);
-                } catch (IOException e) {
-                    display(e.getMessage());
-                }
+
+                Glide.with(imageView)
+                        .load(question)
+                        .placeholder(R.drawable.ic_baseline_rotate_right_24)
+                        .listener(new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                Toast.makeText(getApplicationContext(), "Picture load error!", Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                return false;
+                            }
+
+                        })
+                        .into(imageView);
+
+
                 return false;
             }
         });
-    }
-
-    public void display(String msg) {
-        Context context = createContext();
-        Toast toast = Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
     }
 }
